@@ -20,4 +20,8 @@ _cgo_export.*
 _testmain.go
 
 *.exe
+
+# Artifacts
 concentrate
+*.zip
+*.tar.gz
