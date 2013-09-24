@@ -4,12 +4,15 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 )
 
 type HostsFile struct {
 	Entries []string
+	Started bool
 }
 
 // Add a new hostfile entry
@@ -34,17 +37,67 @@ func (hostsfile *HostsFile) Remove(domain string) {
 }
 
 // Uncomment the host file entries
-func (hostsfile HostsFile) Start() error {
-	return nil
+func (hostsfile *HostsFile) Start() {
+	hostsfile.Started = true
 }
 
 // Comment the host file entries
-func (hostsfile HostsFile) Stop() error {
-	return nil
+func (hostsfile *HostsFile) Stop() {
+	hostsfile.Started = false
 }
 
 func (hostsfile HostsFile) Write(path string) error {
-	return nil
+	file, err := os.Open(path)
+
+	if err != nil {
+		return err
+	}
+
+	finfo, err := os.Stat(path)
+
+	if err != nil {
+		return err
+	}
+
+	scanner := bufio.NewScanner(file)
+
+	lines := []string{}
+	mark := false
+
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		if strings.HasPrefix(line, "# CONCENTRATE") {
+			lines = append(lines, line)
+
+			for _, entry := range hostsfile.Entries {
+				if hostsfile.Started {
+					lines = append(lines, "127.0.0.1 "+entry)
+				} else {
+					lines = append(lines, "# "+entry)
+				}
+			}
+
+			mark = true
+			continue
+		}
+
+		if strings.HasPrefix(line, "# END") {
+			mark = false
+		}
+
+		if !mark {
+			lines = append(lines, line)
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+
+	content := strings.Join(lines, "\n")
+
+	return ioutil.WriteFile(path, []byte(content+"\n"), finfo.Mode())
 }
 
 func Parse(path string) (HostsFile, error) {
@@ -74,6 +127,9 @@ func Parse(path string) (HostsFile, error) {
 
 		if mark {
 			fields := strings.Fields(line)
+			if fields[0] == "localhost" {
+				hostsfile.Started = true
+			}
 			hostsfile.Entries = append(hostsfile.Entries, fields[1])
 		}
 
@@ -102,25 +158,29 @@ concentrate help
 	hostfile, err := Parse("/etc/hosts")
 
 	if err != nil {
-		fmt.Println("ERROR", err)
+		log.Fatal(err)
 		return
 	}
 
 	switch cmd {
 	case "add":
-		hostfile.Add("www.reddit.com")
+		hostfile.Add(flag.Arg(1))
+		err = hostfile.Write("/etc/hosts")
 	case "remove":
-		hostfile.Remove("www.reddit.com")
+		hostfile.Remove(flag.Arg(1))
+		err = hostfile.Write("/etc/hosts")
 	case "start":
-		err = hostfile.Start()
+		hostfile.Start()
+		err = hostfile.Write("/etc/hosts")
 	case "stop":
-		err = hostfile.Stop()
+		hostfile.Stop()
+		err = hostfile.Write("/etc/hosts")
 	case "help":
 	default:
 		fmt.Println(help)
 	}
 
 	if err != nil {
-		fmt.Println("ERROR", err)
+		log.Fatal(err)
 	}
 }

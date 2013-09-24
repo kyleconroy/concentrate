@@ -1,4 +1,4 @@
-.PHONY: test fmt
+.PHONY: test fmt run
 
 concentrate: fmt concentrate.go
 	go build
