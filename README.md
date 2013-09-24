@@ -1,4 +1,4 @@
-# concentrate
+![concentrate](http://i.imgur.com/Ehp0p05.png)
 
 A simple Golang program for managing /etc/hosts entries
 
