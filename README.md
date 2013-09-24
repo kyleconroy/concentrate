@@ -11,8 +11,11 @@ A simple Golang program for managing /etc/hosts entries
 
 ## Download
 
+- [OSX 64bit](https://github.com/kyleconroy/concentrate/releases/download/1.0/concentrate.zip)
+- [Linux 64bit](https://github.com/kyleconroy/concentrate/releases/download/1.0/concentrate.tar.gz)
+
 ## Hacking
 
-You'll need to have [Go][golang] installed to build the binary.
+You'll need to have Go installed to build the binary.
 
     $ go build 
