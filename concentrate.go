@@ -127,7 +127,7 @@ func Parse(path string) (HostsFile, error) {
 
 		if mark {
 			fields := strings.Fields(line)
-			if fields[0] == "localhost" {
+			if fields[0] == "127.0.0.1" {
 				hostsfile.Started = true
 			}
 			hostsfile.Entries = append(hostsfile.Entries, fields[1])
