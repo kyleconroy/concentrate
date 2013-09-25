@@ -11,8 +11,8 @@ A simple Golang program for managing /etc/hosts entries
 
 ## Download
 
-- [OSX 64bit](https://github.com/kyleconroy/concentrate/releases/download/1.0/concentrate.zip)
-- [Linux 64bit](https://github.com/kyleconroy/concentrate/releases/download/1.0/concentrate.tar.gz)
+- [OSX 64bit](https://github.com/kyleconroy/concentrate/releases/download/1.0.1/concentrate-osx.zip)
+- [Linux 64bit](https://github.com/kyleconroy/concentrate/releases/download/1.0.1/concentrate-linux.tar.gz)
 
 ## Hacking
 
